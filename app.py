@@ -2,7 +2,7 @@ from logging import NOTSET
 from os import read
 from sqlite3.dbapi2 import Row
 from typing import List
-import chatterbot
+import chatterbot, sqlite3 as sql, yaml, pprint
 from flask import Flask, render_template, request, redirect, url_for, flash, session, escape
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
@@ -10,7 +10,6 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot import filters
 from chatterbot.comparisons import levenshtein_distance
 from chatterbot.response_selection import get_first_response
-import sqlite3 as sql
 from pythainlp import word_tokenize, sent_tokenize
 
 app = Flask(__name__)
@@ -52,22 +51,16 @@ trainer = ChatterBotCorpusTrainer(bot)
 # trainer.train("trainBot/greeting.yml")
 
 #----------------------------------- ChatBot -----------------------------------#
-@app.route('/', methods=['GET','POST']) 
+
+@app.route('/') 
 def index():
     con = sql.connect("db.sqlite3")
-    #con.row_factory = sql.Row
+    con.row_factory = sql.Row
     cur = con.cursor()
     cur.execute("select distinct text from statement where text in (select text from statement group by text order by count(text) DESC limit 5);")
-
-    # rows1 = (cur.fetchone())
-    # rows2 = cur.fetchone()
-    # rows3 = cur.fetchone()
-    # rows4 = cur.fetchone()
-    # rows5 = cur.fetchone()
     rows = cur.fetchall()
-    # print(rows)
-    return render_template("index.html", rows=rows)
 
+    return render_template("index.html", row=rows)
     
 @app.route('/get')
 def get_bot_response():

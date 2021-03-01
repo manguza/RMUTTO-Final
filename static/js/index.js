@@ -63,7 +63,7 @@ const PERSON_NAME = "You";
     function infor(){
         const infor = document.getElementById("infor").innerText='สอบถามข้อมูลเบื้องต้น';
             appendMessage(PERSON_NAME, PERSON_IMG, "right", infor);
-            botResponse(infor);  
+            botResponse(infor);
     }
 
     function doc(){
@@ -74,7 +74,8 @@ const PERSON_NAME = "You";
 
     function text(){
         const textin = document.getElementById("textin").value;
-        appendMessage(PERSON_NAME, PERSON_IMG, "right", textin);
-        botResponse();
+        //textout = String(textin)
+        appendMessage(PERSON_NAME, PERSON_IMG, "right", String(textin));
+        botResponse(textin);
         
     }
