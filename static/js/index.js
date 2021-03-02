@@ -72,8 +72,8 @@ const PERSON_NAME = "You";
             botResponse(doc);  
     }
 
-    function text(){
-        const textin = document.getElementById("textin").value;
+    function text(textin){
+        //const textin = document.getElementById("textin").value;
         //textout = String(textin)
         appendMessage(PERSON_NAME, PERSON_IMG, "right", String(textin));
         botResponse(textin);

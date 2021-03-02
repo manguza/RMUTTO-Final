@@ -57,9 +57,12 @@ def index():
     con = sql.connect("db.sqlite3")
     con.row_factory = sql.Row
     cur = con.cursor()
-    cur.execute("select distinct text from statement where text in (select text from statement group by text order by count(text) DESC limit 5);")
+    cur.execute("SELECT  text, id FROM statement where id%2 != 0 group by text order by count(text) DESC")
     rows = cur.fetchall()
 
+    # for row in rows:
+    #     print(row['text'])
+        
     return render_template("index.html", row=rows)
     
 @app.route('/get')
