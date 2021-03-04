@@ -17,16 +17,23 @@ app.secret_key = 'random string'
 
 bot = ChatBot("MyBot",
     filters=[filters.get_recent_repeated_responses],
+    response_selection_method = get_first_response,
+    statement_comparison_function = levenshtein_distance,
     logic_adapters=[
     {
         'import_path':'chatterbot.logic.BestMatch',
-        "statement_comparison_function": chatterbot.comparisons.levenshtein_distance,
-        "response_selection_method": chatterbot.response_selection.get_first_response,
+        'statement_comparison_function': levenshtein_distance,
+        'response_selection_method' : get_first_response,
         'default_response': 'ขออภัยในความไม่สะดวก หากผู้ใช้งานพิมพ์ข้อมูลผิดกรุณาพิมพ์ใหม่ หรือระบบไม่มีข้อมูลในฐานข้อมูล',
         'maximum_similarity_threshold': 0.90
     }],read_only = True)
     
 trainer = ChatterBotCorpusTrainer(bot)
+
+# trainer.train("trainBot/greeting.yml")
+# trainer.train("trainBot/start.yml")
+# trainer.train("trainBot/end.yml")
+# trainer.train("trainBot/information.yml")
 # trainer.train("trainBot/form1.yml")
 # trainer.train("trainBot/form2.yml")
 # trainer.train("trainBot/form3.yml")
@@ -47,8 +54,8 @@ trainer = ChatterBotCorpusTrainer(bot)
 # trainer.train("trainBot/form19.yml")
 # trainer.train("trainBot/form20.yml")
 # trainer.train("trainBot/form21.yml")
-# trainer.train("trainBot/end.yml")
-# trainer.train("trainBot/greeting.yml")
+# trainer.train("trainBot/addform.yml")
+
 
 #----------------------------------- ChatBot -----------------------------------#
 
@@ -57,13 +64,15 @@ def index():
     con = sql.connect("db.sqlite3")
     con.row_factory = sql.Row
     cur = con.cursor()
-    cur.execute("SELECT  text, id FROM statement where id%2 != 0 group by text order by count(text) DESC")
+    cur.execute("SELECT text FROM statement where id%2 != 0 group by id order by id DESC limit 5")
     rows = cur.fetchall()
-
-    # for row in rows:
+    cur.execute("select text from statement where text like 'เครื่องแต่งกาย แบบปกติ<br>%'")
+    rows2 = cur.fetchall()
+    
+    # for row in rows2:
     #     print(row['text'])
         
-    return render_template("index.html", row=rows)
+    return render_template("index.html", row=rows, row2=rows2)
     
 @app.route('/get')
 def get_bot_response():
@@ -220,4 +229,4 @@ def getaddtext():
 #--------------------------------------------------------------------------------#
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(debug=False)
